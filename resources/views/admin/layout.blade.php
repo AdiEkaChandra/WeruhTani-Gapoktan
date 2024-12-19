@@ -20,6 +20,7 @@
         <h4>Weruh Tani</h4>
         <a href="{{ route('admin.dashboard') }}">Dashboard</a>
         <a href="{{ route('admin.buat_pesanan') }}">Buat Pesanan</a>
+        <a href="{{route('admin.tabel_pelanggan') }}">Tabel Pelanggan</a>
         <a href="#" id="logoutButton">Keluar</a>
     </div>
     <div class="content">

@@ -16,6 +16,24 @@ class AdminController extends Controller
         return view('admin.dashboard');
     }
 
+    public function tabelPelanggan(Request $request)
+    {
+        $search = $request->input('search');
+        $pelanggan = Pelanggan::when($search, function ($query, $search) {
+            return $query->where('nama_pelanggan', 'like', "%$search%");
+        })->paginate(10);
+    
+        return view('admin.tabel_pelanggan', compact('pelanggan'));
+    }
+    
+
+    public function deletePelanggan($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+        $pelanggan->delete();
+        return redirect()->route('admin.tabel_pelanggan')->with('success', 'Data berhasil dihapus');
+    }
+
     public function buatPesanan()
     {
         return view('admin.buat_pesanan');

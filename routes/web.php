@@ -20,6 +20,9 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/buat-pesanan', [AdminController::class, 'buatPesanan'])->name('buat_pesanan');
     Route::post('/simpan-pesanan', [AdminController::class, 'simpanPesanan'])->name('simpan_pesanan');
+    Route::get('/tabel_pelanggan', [AdminController::class, 'tabelPelanggan'])->name('tabel_pelanggan');
+    Route::delete('/delete_pelanggan/{id}', [AdminController::class, 'deletePelanggan'])->name('delete_pelanggan');
+    Route::get('/edit_pelanggan/{id}', [AdminController::class, 'editPelanggan'])->name('edit_pelanggan'); // Tambahkan edit logic
 });
 
 // Route untuk prediksi
