@@ -16,38 +16,77 @@
 
 <main class="container my-5">
     <!-- Data Gabah -->
-    <section class="mb-5">
+    <div class="container mt-4">
         <h2 class="fw-bold" id="data-gabah">Data Gabah</h2>
-        <table class="table table-bordered table-striped mt-4">
-            <thead>
-                <tr class="table-secondary">
-                    <th>No.</th>
-                    <th>Jenis Gabah</th>
-                    <th>Berat (kg)</th>
-                    <th>Suhu Awal (C)</th>
-                    <th>Kadar Air Awal (%)</th>
-                    <th>Suhu Akhir (C)</th>
-                    <th>Kadar Air Akhir (%)</th>
-                    <th>Durasi (Menit)</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <!-- Tambahkan data gabah dari database -->
-                </tr>
-            </tbody>
-        </table>
-    </section>
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Daftar Pelanggan</h5>
+                <form action="{{ route('home') }}" method="GET" class="d-flex">
+                    <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Cari nama pelanggan..." value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-light btn-sm">Cari</button>
+                </form>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-primary">
+                            <tr style="text-align: center; vertical-align: middle">
+                                <th>No</th>
+                                <th>Nama Pelanggan</th>
+                                <th>Alamat</th>
+                                <th>No. HP</th>
+                                <th>Jenis Gabah</th>
+                                <th>Berat (Kg)</th>
+                                <th>Durasi (Menit)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($pelanggan as $key => $item)
+                            <tr>
+                                <td>{{ $key + 1 }}</td>
+                                <td>{{ $item->nama_pelanggan }}</td>
+                                <td>{{ $item->alamat }}</td>
+                                <td>{{ $item->no_hp }}</td>
+                                <td>{{ $item->jenis_gabah }}</td>
+                                <td>{{ $item->berat }}</td>
+                                <td>{{ $item->durasi }}</td>
+                                <td>
+                                    <span class="badge 
+                                        @if($item->status == 'menunggu') bg-warning 
+                                        @elseif($item->status == 'berjalan') bg-info 
+                                        @elseif($item->status == 'berhenti') bg-danger 
+                                        @else bg-success 
+                                        @endif">
+                                        {{ ucfirst($item->status) }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="text-center">Data tidak ditemukan.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                <div class="d-flex justify-content-end">
+                    {{ $pelanggan->links() }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
 
     <!-- Prediksi -->
-    <section class="my-5">
+    <section class="container my-5">
         <h2 class="fw-bold" id="prediksi">Prediksi Waktu Pengeringan</h2>
         <div class="row mt-4">
             <!-- Form -->
             <div class="col-md-6">
-                <form action="{{ route('predict') }}" method="POST">
-                    @csrf
+                <form id="predictionForm">
                     <div class="mb-3">
                         <label class="form-label">Berat (kg)</label>
                         <input type="number" class="form-control" name="massa" required>
@@ -71,7 +110,6 @@
                     <button type="submit" class="btn btn-outline-dark w-100">Prediksi</button>
                 </form>
             </div>
-
             <!-- Hasil -->
             <div class="col-md-6">
                 <div class="border p-4 text-center rounded shadow-sm">
@@ -82,4 +120,36 @@
         </div>
     </section>
 </main>
+<script>
+            document.getElementById('predictionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        const predictionOutput = document.getElementById('predictionOutput');
+
+        fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'  // Pastikan header JSON
+            },
+            body: JSON.stringify(data)  // Kirim data dalam format JSON
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.hours !== undefined) {
+                predictionOutput.textContent = `${data.hours} Jam ${data.minutes} Menit ${data.seconds} Detik`;
+            } else if (data.error) {
+                predictionOutput.textContent = `Error: ${data.error}`;
+            }
+        })
+        .catch(error => {
+            predictionOutput.textContent = `Error: ${error.message}`;
+        });
+    });
+</script>
 @endsection

@@ -14,7 +14,7 @@
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
                     <thead class="table-primary">
-                        <tr>
+                        <tr style="text-align: center;  vertical-align: middle">
                             <th>No</th>
                             <th>Nama Pelanggan</th>
                             <th>Alamat</th>
@@ -51,7 +51,8 @@
                                 <form action="{{ route('admin.delete_pelanggan', $item->id) }}" method="POST" style="display: inline-block;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus data ini?')">Hapus</button>
+                                    {{-- <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus data ini?')">Hapus</button> --}}
+                                    <button type="button" class="btn btn-sm btn-danger delete-btn" data-url="{{ route('admin.delete_pelanggan', $item->id) }}">Hapus</button>
                                 </form>
                             </td>
                         </tr>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pelanggan;
 
 class AdminController extends Controller
 {
@@ -43,18 +44,56 @@ class AdminController extends Controller
     {
         // Validasi data
         $validated = $request->validate([
-            'nama_pemesan' => 'required|string|max:255',
+            'nama_pelanggan' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
             'no_hp' => 'required|string|max:15',
             'jenis_gabah' => 'required|string|max:255',
             'berat' => 'required|numeric',
-            'suhu_awal' => 'required|numeric',
-            'kadar_air' => 'required|numeric',
             'durasi' => 'required|numeric',
+            'status' => 'required|in:menunggu,berjalan,berhenti,selesai',
+        ]);
+    
+        // Simpan ke database
+        $pelanggan = Pelanggan::create($validated);
+    
+        // Debugging untuk memastikan penyimpanan
+        // if ($pelanggan) {
+        //     \Log::info('Data berhasil disimpan:', $pelanggan->toArray());
+        // } else {
+        //     \Log::error('Gagal menyimpan data pelanggan.');
+        // }
+    
+        // Redirect dengan pesan sukses
+        return redirect()->route('admin.tabel_pelanggan')->with('success', 'Pesanan berhasil disimpan!');
+    }
+
+    public function editPelanggan($id)
+    {
+        // Cari data pelanggan berdasarkan ID
+        $pelanggan = Pelanggan::findOrFail($id);
+
+        // Tampilkan view untuk edit pelanggan dengan data yang ditemukan
+        return view('admin.edit_pelanggan', compact('pelanggan'));
+    }
+
+    public function updatePelanggan(Request $request, $id)
+    {
+        // Validasi data
+        $validated = $request->validate([
+            'nama_pelanggan' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
+            'no_hp' => 'required|string|max:15',
+            'jenis_gabah' => 'required|string|max:255',
+            'berat' => 'required|numeric',
+            'durasi' => 'required|numeric',
+            'status' => 'required|in:menunggu,berjalan,berhenti,selesai',
         ]);
 
-        // Proses simpan ke database (opsional, sesuai kebutuhan)
-        // Pesanan::create($validated);
+        // Cari pelanggan berdasarkan ID dan perbarui data
+        $pelanggan = Pelanggan::findOrFail($id);
+        $pelanggan->update($validated);
 
-        return redirect()->route('admin.dashboard')->with('success', 'Pesanan berhasil disimpan!');
+        // Redirect dengan pesan sukses
+        return redirect()->route('admin.tabel_pelanggan')->with('success', 'Data pelanggan berhasil diperbarui!');
     }
 }
